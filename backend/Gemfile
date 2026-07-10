@@ -35,9 +35,16 @@ gem "image_processing", "~> 1.2"
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin Ajax possible
 # gem "rack-cors"
 
+# Build a GraphQL API [https://graphql-ruby.org]
+gem "graphql", "~> 2.5"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
+
+  # Test data builders and fake data for tests
+  gem "factory_bot_rails", "~> 6.5"
+  gem "faker", "~> 3.8"
 
   # Audits gems for known security defects (use config/bundler-audit.yml to ignore issues)
   gem "bundler-audit", require: false
@@ -49,10 +56,6 @@ group :development, :test do
   gem "rubocop-rails-omakase", require: false
 end
 
-gem "rspec-rails", "~> 8.0"
-gem "factory_bot_rails", "~> 6.5"
-gem "faker", "~> 3.8"
-gem "shoulda-matchers", "~> 8.0"
 gem "rack-cors", "~> 3.0"
 
 gem "rubocop", "~> 1.88", group: :development

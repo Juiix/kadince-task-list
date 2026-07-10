@@ -1,9 +1,17 @@
-# This file should ensure the existence of records required to run the application in every environment (production,
-# development, test). The code here should be idempotent so that it can be executed at any point in every environment.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Example:
-#
-#   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
-#     MovieGenre.find_or_create_by!(name: genre_name)
-#   end
+# Idempotent seed data for development and demos.
+# Run with: bin/rails db:seed
+
+[
+  { title: "Review the Kadince take-home brief", description: "Confirm all required features are covered.", completed: true },
+  { title: "Build the GraphQL API", description: "Queries, mutations, and integration tests.", completed: true },
+  { title: "Build the React frontend", description: "Task list with filters, forms, and optimistic updates.", completed: false },
+  { title: "Write end-to-end tests", description: "Cypress flows for create, complete, filter, and delete.", completed: false },
+  { title: "Deploy the app", description: "Publish a live URL and add it to the README.", completed: false }
+].each do |attrs|
+  Task.find_or_create_by!(title: attrs[:title]) do |task|
+    task.description = attrs[:description]
+    task.completed = attrs[:completed]
+  end
+end
+
+puts "Seeded #{Task.count} tasks."

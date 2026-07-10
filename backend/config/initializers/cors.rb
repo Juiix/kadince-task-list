@@ -1,16 +1,15 @@
 # Be sure to restart your server when you modify this file.
 
-# Avoid CORS issues when API is called from the frontend app.
-# Handle Cross-Origin Resource Sharing (CORS) in order to accept cross-origin Ajax requests.
+# Allow the React frontend to call this API from a different origin.
+# In development that's the Vite dev server; in production set
+# FRONTEND_ORIGIN to the deployed frontend's URL.
 
-# Read more: https://github.com/cyu/rack-cors
+Rails.application.config.middleware.insert_before 0, Rack::Cors do
+  allow do
+    origins ENV.fetch("FRONTEND_ORIGIN", "http://localhost:5173")
 
-# Rails.application.config.middleware.insert_before 0, Rack::Cors do
-#   allow do
-#     origins "example.com"
-#
-#     resource "*",
-#       headers: :any,
-#       methods: [:get, :post, :put, :patch, :delete, :options, :head]
-#   end
-# end
+    resource "/graphql",
+      headers: :any,
+      methods: [ :post, :options ]
+  end
+end
