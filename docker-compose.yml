@@ -1,0 +1,15 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: kadince_task_list_postgres
+    environment:
+      POSTGRES_USER: kadince
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: kadince_task_list_development
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

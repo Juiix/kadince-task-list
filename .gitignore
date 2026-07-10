@@ -1,0 +1,95 @@
+# =========================
+# macOS
+# =========================
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# =========================
+# Editors
+# =========================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# =========================
+# Environment
+# =========================
+.env
+.env.*
+!.env.example
+
+# =========================
+# Logs
+# =========================
+*.log
+logs/
+log/
+
+# =========================
+# Node
+# =========================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# =========================
+# Vite
+# =========================
+frontend/dist/
+frontend/.vite/
+
+# =========================
+# Coverage
+# =========================
+coverage/
+frontend/coverage/
+backend/coverage/
+
+# =========================
+# Rails
+# =========================
+backend/tmp/
+backend/storage/
+backend/log/*
+!backend/log/.keep
+
+backend/public/assets
+backend/public/packs
+backend/public/packs-test
+
+backend/db/*.sqlite3
+backend/db/*.sqlite3-*
+
+backend/.bundle/
+backend/vendor/bundle/
+
+# Credentials
+backend/config/master.key
+
+# Bootsnap
+backend/tmp/cache/
+
+# =========================
+# Bundler
+# =========================
+.bundle/
+
+# =========================
+# Testing
+# =========================
+capybara-*.html
+
+# =========================
+# Docker
+# =========================
+*.pid
+
+# =========================
+# Misc
+# =========================
+*.orig
+*.rej
