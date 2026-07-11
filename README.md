@@ -2,6 +2,8 @@
 
 A full-stack task list application. Create, edit, complete, and delete tasks alongside your work to stay on track and organized.
 
+**Live demo:** [kadince.juix.dev](https://kadince.juix.dev) — free-tier hosting, so the first request after idle takes ~30s while the API cold-starts.
+
 ## Goals & Approach
 
 Beyond meeting the assessment, I set additional goals for this project:
@@ -34,7 +36,7 @@ Beyond meeting the assessment, I set additional goals for this project:
 - [x] Frontend component tests (Vitest + Testing Library)
 - [x] End-to-end tests (Cypress: create, complete, filter, edit, delete, search, overdue)
 - [x] CI pipeline (GitHub Actions: backend, frontend, and e2e suites)
-- [ ] Deployment + live URL
+- [x] Deployment + live URL (Render Blueprint)
 
 ### After the MVP
 

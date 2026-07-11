@@ -26,7 +26,7 @@ services:
       - key: RAILS_MASTER_KEY
         sync: false
       - key: FRONTEND_ORIGIN
-        value: https://kadince-task-list.onrender.com
+        value: https://kadince.juix.dev,https://kadince-task-list.onrender.com
       - key: HTTP_PORT # Thruster listens where Render routes traffic
         value: "10000"
 
