@@ -1,38 +1,6 @@
-import { Link, useLocation, useSearchParams } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
+import { NAV_ITEMS } from './navItems'
 import type { TaskCounts } from '../hooks/useTaskCounts'
-
-interface NavItem {
-  to: string
-  label: string
-  countKey?: keyof TaskCounts
-  isActive: (pathname: string, filter: string | null) => boolean
-  icon: React.ReactNode
-}
-
-const NAV_ITEMS: NavItem[] = [
-  {
-    to: '/',
-    label: 'Today',
-    countKey: 'today',
-    isActive: (pathname) => pathname === '/',
-    icon: (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <rect x="4" y="5.5" width="16" height="15" rx="2.5" />
-        <path d="M4 10h16M8.5 3.5v3M15.5 3.5v3M12 13.5v4M10 15.5h4" />
-      </svg>
-    ),
-  },
-  {
-    to: '/tasks',
-    label: 'Tasks',
-    isActive: (pathname) => pathname === '/tasks',
-    icon: (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M4 11.5 12 4l8 7.5M6 10v9h4v-5h4v5h4v-9" />
-      </svg>
-    ),
-  },
-]
 
 interface SidebarProps {
   counts?: TaskCounts
@@ -40,8 +8,6 @@ interface SidebarProps {
 
 export function Sidebar({ counts }: SidebarProps) {
   const { pathname } = useLocation()
-  const [searchParams] = useSearchParams()
-  const filter = searchParams.get('filter')
 
   return (
     <aside className="sidebar">
@@ -56,7 +22,7 @@ export function Sidebar({ counts }: SidebarProps) {
 
       <nav aria-label="Task views">
         {NAV_ITEMS.map((item) => {
-          const active = item.isActive(pathname, filter)
+          const active = item.isActive(pathname)
           return (
             <Link
               key={item.label}

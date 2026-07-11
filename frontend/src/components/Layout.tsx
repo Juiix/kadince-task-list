@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Outlet } from 'react-router-dom'
+import { MobileNav } from './MobileNav'
 import { Modal } from './Modal'
 import { Sidebar } from './Sidebar'
 import { TaskForm } from './TaskForm'
@@ -24,6 +25,8 @@ export function Layout() {
       <main className="main">
         <Outlet context={context} />
       </main>
+
+      <MobileNav counts={counts} />
 
       {adding && (
         <Modal title="Add Task" onClose={() => setAdding(null)}>
