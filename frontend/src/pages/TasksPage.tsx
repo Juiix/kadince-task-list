@@ -1,6 +1,7 @@
 import { useSearchParams } from 'react-router-dom'
 import { FilterTabs } from '../components/FilterTabs'
 import { Header } from '../components/Header'
+import { SearchInput } from '../components/SearchInput'
 import { useLayout } from '../hooks/useLayout'
 import { TaskGroup } from '../components/TaskGroup'
 import { useTaskCounts } from '../hooks/useTaskCounts'
@@ -52,17 +53,20 @@ export function TasksPage() {
 
   return (
     <>
-      <Header title="Tasks" subtitle="Everything in one place." showSearch />
+      <Header title="Tasks" subtitle="Everything in one place." />
       <div className="toolbar">
         <FilterTabs value={filter} onChange={setFilter} counts={counts} />
-        <button
-          type="button"
-          className="btn primary"
-          data-cy="add-task-button"
-          onClick={() => openAddTask()}
-        >
-          + Add Task
-        </button>
+        <div className="toolbar-actions">
+          <SearchInput />
+          <button
+            type="button"
+            className="btn primary"
+            data-cy="add-task-button"
+            onClick={() => openAddTask()}
+          >
+            + Add Task
+          </button>
+        </div>
       </div>
       <TaskGroup
         title={GROUP_LABELS[filter]}
