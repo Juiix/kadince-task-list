@@ -525,6 +525,13 @@ body {
   opacity: 1;
 }
 
+/* Touch devices can't hover — keep the actions always visible there. */
+@media (hover: none) {
+  .task-actions {
+    opacity: 1;
+  }
+}
+
 .icon-btn {
   border: none;
   background: transparent;
