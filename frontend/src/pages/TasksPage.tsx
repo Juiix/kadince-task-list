@@ -71,6 +71,7 @@ export function TasksPage() {
       <TaskGroup
         title={GROUP_LABELS[filter]}
         tasks={visible}
+        showHeader={false}
         emptyMessage={
           search ? 'No tasks match your search.' : EMPTY_MESSAGES[filter]
         }
