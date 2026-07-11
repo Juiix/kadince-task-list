@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useDeleteTask, useUpdateTask } from '../hooks/useTaskMutations'
 import { formatDue, isDueToday, isOverdue } from '../lib/dates'
 import type { Task } from '../types'
@@ -16,8 +16,27 @@ interface TaskItemProps {
 
 export function TaskItem({ task }: TaskItemProps) {
   const [isEditing, setIsEditing] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
   const updateTask = useUpdateTask()
   const deleteTask = useDeleteTask()
+
+  useEffect(() => {
+    if (!menuOpen) return
+
+    const handleClick = (event: MouseEvent) => {
+      if (!menuRef.current?.contains(event.target as Node)) setMenuOpen(false)
+    }
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMenuOpen(false)
+    }
+    document.addEventListener('mousedown', handleClick)
+    document.addEventListener('keydown', handleKey)
+    return () => {
+      document.removeEventListener('mousedown', handleClick)
+      document.removeEventListener('keydown', handleKey)
+    }
+  }, [menuOpen])
 
   const handleToggle = () => {
     updateTask.mutate({ id: task.id, completed: !task.completed })
@@ -88,6 +107,7 @@ export function TaskItem({ task }: TaskItemProps) {
           )
         )}
 
+        {/* Desktop: inline icons revealed on hover */}
         <div className="task-actions">
           <button
             type="button"
@@ -113,6 +133,54 @@ export function TaskItem({ task }: TaskItemProps) {
               <path d="M4.5 6.5h15M9.5 6.5v-2a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v2M7 6.5l1 13a1.5 1.5 0 0 0 1.5 1.4h5a1.5 1.5 0 0 0 1.5-1.4l1-13M10.2 10.5v6M13.8 10.5v6" />
             </svg>
           </button>
+        </div>
+
+        {/* Mobile: actions collapsed under a kebab menu */}
+        <div className="task-menu" ref={menuRef}>
+          <button
+            type="button"
+            className="icon-btn"
+            aria-haspopup="menu"
+            aria-expanded={menuOpen}
+            aria-label={`More options for "${task.title}"`}
+            data-cy="task-menu"
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="5" r="1.7" />
+              <circle cx="12" cy="12" r="1.7" />
+              <circle cx="12" cy="19" r="1.7" />
+            </svg>
+          </button>
+
+          {menuOpen && (
+            <div className="menu" role="menu">
+              <button
+                type="button"
+                role="menuitem"
+                data-cy="task-menu-edit"
+                onClick={() => {
+                  setMenuOpen(false)
+                  setIsEditing(true)
+                }}
+              >
+                Edit
+              </button>
+              <button
+                type="button"
+                role="menuitem"
+                className="danger"
+                data-cy="task-menu-delete"
+                disabled={deleteTask.isPending}
+                onClick={() => {
+                  setMenuOpen(false)
+                  handleDelete()
+                }}
+              >
+                Delete
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </li>

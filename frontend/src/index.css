@@ -525,12 +525,69 @@ body {
   opacity: 1;
 }
 
+/* Mobile kebab menu (hidden on hover-capable wide screens) */
+
+.task-menu {
+  position: relative;
+  display: none;
+}
+
+.task-menu .icon-btn svg {
+  fill: currentColor;
+  stroke: none;
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 5;
+  min-width: 140px;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.25rem;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+}
+
+.menu button {
+  font: inherit;
+  font-size: 0.875rem;
+  text-align: left;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  padding: 0.45rem 0.65rem;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.menu button:hover:not(:disabled) {
+  background: var(--surface-hover);
+}
+
+.menu button.danger {
+  color: var(--danger);
+}
+
+.menu button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 /* Hover-reveal only works for pointers that can hover on a wide screen.
    Touch devices report (hover: none); the width fallback also covers
-   emulators (e.g. Firefox RDM) that don't emulate the hover feature. */
+   emulators (e.g. Firefox RDM) that don't emulate the hover feature.
+   There, the inline icons collapse into the kebab menu instead. */
 @media (hover: none), (max-width: 900px) {
   .task-actions {
-    opacity: 1;
+    display: none;
+  }
+
+  .task-menu {
+    display: block;
   }
 }
 
