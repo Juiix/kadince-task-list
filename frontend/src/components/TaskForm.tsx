@@ -3,7 +3,11 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useCreateTask } from '../hooks/useTaskMutations'
 import { taskSchema, type TaskFormValues } from '../lib/taskSchema'
 
-export function TaskForm() {
+interface TaskFormProps {
+  onSuccess?: () => void
+}
+
+export function TaskForm({ onSuccess }: TaskFormProps) {
   const createTask = useCreateTask()
   const {
     register,
@@ -22,6 +26,7 @@ export function TaskForm() {
         description: values.description || null,
       })
       reset()
+      onSuccess?.()
     } catch {
       // Server error is surfaced below via createTask.error
     }
@@ -35,6 +40,8 @@ export function TaskForm() {
         placeholder="What needs doing?"
         aria-label="Task title"
         aria-invalid={errors.title ? true : undefined}
+        data-cy="task-title-input"
+        autoFocus
       />
       {errors.title && <p className="field-error">{errors.title.message}</p>}
 
@@ -43,6 +50,7 @@ export function TaskForm() {
         placeholder="Add a description (optional)"
         aria-label="Task description"
         rows={2}
+        data-cy="task-description-input"
       />
       {errors.description && (
         <p className="field-error">{errors.description.message}</p>
@@ -54,7 +62,12 @@ export function TaskForm() {
         </p>
       )}
 
-      <button type="submit" className="btn primary" disabled={isSubmitting}>
+      <button
+        type="submit"
+        className="btn primary"
+        disabled={isSubmitting}
+        data-cy="task-submit"
+      >
         {isSubmitting ? 'Adding…' : 'Add task'}
       </button>
     </form>
