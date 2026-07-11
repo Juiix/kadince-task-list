@@ -6,6 +6,7 @@ const TASK_FIELDS = `
   title
   description
   completed
+  dueOn
   createdAt
   updatedAt
 `
@@ -38,6 +39,7 @@ export async function fetchTasks(filter: TaskFilter): Promise<Task[]> {
 export interface CreateTaskInput {
   title: string
   description?: string | null
+  dueOn?: string | null
 }
 
 export async function createTask(input: CreateTaskInput): Promise<Task> {
@@ -60,6 +62,7 @@ export interface UpdateTaskInput {
   title?: string
   description?: string | null
   completed?: boolean
+  dueOn?: string | null
 }
 
 export async function updateTask(input: UpdateTaskInput): Promise<Task> {

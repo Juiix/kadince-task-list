@@ -8,6 +8,7 @@ module Types
     field :title, String, null: false
     field :description, String
     field :completed, Boolean, null: false
+    field :due_on, GraphQL::Types::ISO8601Date, description: "The date this task is meant to be done"
     field :created_at, GraphQL::Types::ISO8601DateTime, null: false
     field :updated_at, GraphQL::Types::ISO8601DateTime, null: false
   end

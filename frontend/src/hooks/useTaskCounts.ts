@@ -1,9 +1,11 @@
+import { isDueToday, isOverdue } from '../lib/dates'
 import { useTasks } from './useTasks'
 
 export interface TaskCounts {
   all: number
   pending: number
   completed: number
+  today: number
 }
 
 /**
@@ -16,5 +18,9 @@ export function useTaskCounts(): TaskCounts | undefined {
   if (!tasks) return undefined
 
   const completed = tasks.filter((task) => task.completed).length
-  return { all: tasks.length, pending: tasks.length - completed, completed }
+  const today = tasks.filter(
+    (task) => isOverdue(task) || (isDueToday(task) && !task.completed),
+  ).length
+
+  return { all: tasks.length, pending: tasks.length - completed, completed, today }
 }

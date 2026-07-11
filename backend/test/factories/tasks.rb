@@ -7,5 +7,13 @@ FactoryBot.define do
     trait :completed do
       completed { true }
     end
+
+    trait :overdue do
+      due_on { 2.days.ago.to_date }
+    end
+
+    trait :due_today do
+      due_on { Date.current }
+    end
   end
 end

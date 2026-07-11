@@ -37,11 +37,12 @@ Beyond meeting the assessment, I set additional goals for this project:
 
 ### After the MVP
 
-- [ ] Due dates with overdue highlighting; tasks ordered by due date
+- [x] Due dates with overdue highlighting
+- [x] Today dashboard: overdue tasks surfaced above today's list
+- [x] Task search (client-side)
 - [ ] Projects for grouping tasks
 - [ ] Tags for categorizing tasks
 - [ ] Optimistic updates for instant UI feedback on toggle/delete
-- [ ] Task search
 
 ## Getting Started
 

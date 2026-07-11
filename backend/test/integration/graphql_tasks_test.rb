@@ -78,6 +78,27 @@ class GraphqlTasksTest < ActionDispatch::IntegrationTest
     end
   end
 
+  test "createTask accepts a due date" do
+    body = execute_graphql(
+      "mutation($input: CreateTaskInput!) { createTask(input: $input) { task { id dueOn } errors } }",
+      variables: { input: { title: "Dated task", dueOn: "2026-07-15" } }
+    )
+
+    assert_equal "2026-07-15", body.dig("data", "createTask", "task", "dueOn")
+  end
+
+  test "updateTask can set and clear the due date" do
+    task = create(:task, due_on: Date.current)
+
+    body = execute_graphql(
+      "mutation($input: UpdateTaskInput!) { updateTask(input: $input) { task { dueOn } errors } }",
+      variables: { input: { id: task.id, dueOn: nil } }
+    )
+
+    assert_nil body.dig("data", "updateTask", "task", "dueOn")
+    assert_nil task.reload.due_on
+  end
+
   test "createTask returns validation errors for a blank title" do
     assert_no_difference("Task.count") do
       body = execute_graphql(CREATE_TASK, variables: { input: { title: "" } })

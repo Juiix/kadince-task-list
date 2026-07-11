@@ -1,38 +1,72 @@
-import type { TaskFilter } from '../types'
+import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import type { TaskCounts } from '../hooks/useTaskCounts'
 
-const NAV_ITEMS: { value: TaskFilter; label: string; countKey: keyof TaskCounts }[] = [
-  { value: 'ALL', label: 'My Tasks', countKey: 'all' },
-  { value: 'PENDING', label: 'Pending', countKey: 'pending' },
-  { value: 'COMPLETED', label: 'Completed', countKey: 'completed' },
-]
-
-const NAV_ICONS: Record<TaskFilter, React.ReactNode> = {
-  ALL: (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M4 11.5 12 4l8 7.5M6 10v9h4v-5h4v5h4v-9" />
-    </svg>
-  ),
-  PENDING: (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <circle cx="12" cy="12" r="8.5" />
-    </svg>
-  ),
-  COMPLETED: (
-    <svg viewBox="0 0 24 24" aria-hidden="true">
-      <circle cx="12" cy="12" r="8.5" />
-      <path d="m8.5 12.5 2.5 2.5 4.5-5.5" />
-    </svg>
-  ),
+interface NavItem {
+  to: string
+  label: string
+  countKey: keyof TaskCounts
+  isActive: (pathname: string, filter: string | null) => boolean
+  icon: React.ReactNode
 }
 
+const NAV_ITEMS: NavItem[] = [
+  {
+    to: '/',
+    label: 'Today',
+    countKey: 'today',
+    isActive: (pathname) => pathname === '/',
+    icon: (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <rect x="4" y="5.5" width="16" height="15" rx="2.5" />
+        <path d="M4 10h16M8.5 3.5v3M15.5 3.5v3M12 13.5v4M10 15.5h4" />
+      </svg>
+    ),
+  },
+  {
+    to: '/tasks',
+    label: 'My Tasks',
+    countKey: 'all',
+    isActive: (pathname, filter) => pathname === '/tasks' && filter === null,
+    icon: (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M4 11.5 12 4l8 7.5M6 10v9h4v-5h4v5h4v-9" />
+      </svg>
+    ),
+  },
+  {
+    to: '/tasks?filter=pending',
+    label: 'Pending',
+    countKey: 'pending',
+    isActive: (pathname, filter) => pathname === '/tasks' && filter === 'pending',
+    icon: (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="8.5" />
+      </svg>
+    ),
+  },
+  {
+    to: '/tasks?filter=completed',
+    label: 'Completed',
+    countKey: 'completed',
+    isActive: (pathname, filter) => pathname === '/tasks' && filter === 'completed',
+    icon: (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="8.5" />
+        <path d="m8.5 12.5 2.5 2.5 4.5-5.5" />
+      </svg>
+    ),
+  },
+]
+
 interface SidebarProps {
-  filter: TaskFilter
-  onChange: (filter: TaskFilter) => void
   counts?: TaskCounts
 }
 
-export function Sidebar({ filter, onChange, counts }: SidebarProps) {
+export function Sidebar({ counts }: SidebarProps) {
+  const { pathname } = useLocation()
+  const [searchParams] = useSearchParams()
+  const filter = searchParams.get('filter')
+
   return (
     <aside className="sidebar">
       <div className="brand">
@@ -45,20 +79,22 @@ export function Sidebar({ filter, onChange, counts }: SidebarProps) {
       </div>
 
       <nav aria-label="Task views">
-        {NAV_ITEMS.map((item) => (
-          <button
-            key={item.value}
-            type="button"
-            className={filter === item.value ? 'nav-item active' : 'nav-item'}
-            aria-current={filter === item.value ? 'page' : undefined}
-            data-cy={`nav-${item.value.toLowerCase()}`}
-            onClick={() => onChange(item.value)}
-          >
-            {NAV_ICONS[item.value]}
-            <span>{item.label}</span>
-            {counts && <span className="nav-count">{counts[item.countKey]}</span>}
-          </button>
-        ))}
+        {NAV_ITEMS.map((item) => {
+          const active = item.isActive(pathname, filter)
+          return (
+            <Link
+              key={item.label}
+              to={item.to}
+              className={active ? 'nav-item active' : 'nav-item'}
+              aria-current={active ? 'page' : undefined}
+              data-cy={`nav-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
+            >
+              {item.icon}
+              <span>{item.label}</span>
+              {counts && <span className="nav-count">{counts[item.countKey]}</span>}
+            </Link>
+          )
+        })}
       </nav>
 
       <div className="side-section">

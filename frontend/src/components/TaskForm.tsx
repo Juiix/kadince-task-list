@@ -5,9 +5,10 @@ import { taskSchema, type TaskFormValues } from '../lib/taskSchema'
 
 interface TaskFormProps {
   onSuccess?: () => void
+  defaultDueOn?: string
 }
 
-export function TaskForm({ onSuccess }: TaskFormProps) {
+export function TaskForm({ onSuccess, defaultDueOn }: TaskFormProps) {
   const createTask = useCreateTask()
   const {
     register,
@@ -16,7 +17,7 @@ export function TaskForm({ onSuccess }: TaskFormProps) {
     formState: { errors, isSubmitting },
   } = useForm<TaskFormValues>({
     resolver: zodResolver(taskSchema),
-    defaultValues: { title: '', description: '' },
+    defaultValues: { title: '', description: '', dueOn: defaultDueOn ?? '' },
   })
 
   const onSubmit = handleSubmit(async (values) => {
@@ -24,6 +25,7 @@ export function TaskForm({ onSuccess }: TaskFormProps) {
       await createTask.mutateAsync({
         title: values.title,
         description: values.description || null,
+        dueOn: values.dueOn || null,
       })
       reset()
       onSuccess?.()
@@ -55,6 +57,12 @@ export function TaskForm({ onSuccess }: TaskFormProps) {
       {errors.description && (
         <p className="field-error">{errors.description.message}</p>
       )}
+
+      <label className="date-field">
+        <span>Due date (optional)</span>
+        <input type="date" {...register('dueOn')} data-cy="task-due-input" />
+      </label>
+      {errors.dueOn && <p className="field-error">{errors.dueOn.message}</p>}
 
       {createTask.isError && (
         <p className="field-error" role="alert">

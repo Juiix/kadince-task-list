@@ -17,7 +17,11 @@ export function TaskEditForm({ task, onClose }: TaskEditFormProps) {
     formState: { errors, isSubmitting },
   } = useForm<TaskFormValues>({
     resolver: zodResolver(taskSchema),
-    defaultValues: { title: task.title, description: task.description ?? '' },
+    defaultValues: {
+      title: task.title,
+      description: task.description ?? '',
+      dueOn: task.dueOn ?? '',
+    },
   })
 
   const onSubmit = handleSubmit(async (values) => {
@@ -26,6 +30,7 @@ export function TaskEditForm({ task, onClose }: TaskEditFormProps) {
         id: task.id,
         title: values.title,
         description: values.description || null,
+        dueOn: values.dueOn || null,
       })
       onClose()
     } catch {
@@ -53,6 +58,12 @@ export function TaskEditForm({ task, onClose }: TaskEditFormProps) {
       {errors.description && (
         <p className="field-error">{errors.description.message}</p>
       )}
+
+      <label className="date-field">
+        <span>Due date (optional)</span>
+        <input type="date" {...register('dueOn')} data-cy="task-due-input" />
+      </label>
+      {errors.dueOn && <p className="field-error">{errors.dueOn.message}</p>}
 
       {updateTask.isError && (
         <p className="field-error" role="alert">

@@ -36,6 +36,23 @@ class TaskTest < ActiveSupport::TestCase
     assert_equal [ completed_task ], Task.completed.to_a
   end
 
+  test ".overdue returns only incomplete tasks due before today" do
+    overdue = create(:task, :overdue)
+    create(:task, :overdue, :completed)
+    create(:task, :due_today)
+    create(:task)
+
+    assert_equal [ overdue ], Task.overdue.to_a
+  end
+
+  test ".due_today returns tasks due today regardless of completion" do
+    due_today = create(:task, :due_today)
+    done_today = create(:task, :due_today, :completed)
+    create(:task, :overdue)
+
+    assert_equal [ due_today, done_today ].map(&:id).sort, Task.due_today.pluck(:id).sort
+  end
+
   test ".newest_first orders by creation time descending" do
     older = create(:task, created_at: 2.days.ago)
     newer = create(:task)

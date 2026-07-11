@@ -1,36 +1,50 @@
+import { useLayout } from '../hooks/useLayout'
+
 interface HeaderProps {
-  pendingCount?: number
-  onAddTask: () => void
+  title: string
+  subtitle: string
+  onAddTask?: () => void
 }
 
-function greeting(): string {
-  const hour = new Date().getHours()
-  if (hour < 12) return 'Good morning!'
-  if (hour < 18) return 'Good afternoon!'
-  return 'Good evening!'
-}
+export function Header({ title, subtitle, onAddTask }: HeaderProps) {
+  const { search, setSearch } = useLayout()
 
-export function Header({ pendingCount, onAddTask }: HeaderProps) {
   return (
     <header className="header">
-      <div>
-        <h1>{greeting()} 👋</h1>
-        <p className="header-subtitle">
-          {pendingCount === undefined
-            ? 'Loading your tasks…'
-            : pendingCount === 0
-              ? 'You’re all caught up.'
-              : `You have ${pendingCount} pending ${pendingCount === 1 ? 'task' : 'tasks'}.`}
-        </p>
+      <div className="header-text">
+        <h1>{title}</h1>
+        <p className="header-subtitle">{subtitle}</p>
       </div>
-      <button
-        type="button"
-        className="btn primary"
-        data-cy="add-task-button"
-        onClick={onAddTask}
-      >
-        + Add Task
-      </button>
+
+      <div className="header-actions">
+        <div className="search">
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="11" cy="11" r="6.5" />
+            <path d="m16 16 4.5 4.5" />
+          </svg>
+          <input
+            type="search"
+            placeholder="Search tasks…"
+            aria-label="Search tasks"
+            data-cy="search-input"
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+          />
+        </div>
+        {onAddTask && (
+          <button
+            type="button"
+            className="btn primary"
+            data-cy="add-task-button"
+            onClick={onAddTask}
+          >
+            + Add Task
+          </button>
+        )}
+        <span className="avatar" aria-hidden="true">
+          T
+        </span>
+      </div>
     </header>
   )
 }
