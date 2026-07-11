@@ -525,8 +525,10 @@ body {
   opacity: 1;
 }
 
-/* Touch devices can't hover — keep the actions always visible there. */
-@media (hover: none) {
+/* Hover-reveal only works for pointers that can hover on a wide screen.
+   Touch devices report (hover: none); the width fallback also covers
+   emulators (e.g. Firefox RDM) that don't emulate the hover feature. */
+@media (hover: none), (max-width: 900px) {
   .task-actions {
     opacity: 1;
   }
