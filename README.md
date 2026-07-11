@@ -33,7 +33,7 @@ Beyond meeting the assessment, I set additional goals for this project:
 - [x] Frontend mutations UI: create form, complete toggle, edit, delete
 - [x] Frontend component tests (Vitest + Testing Library)
 - [x] End-to-end tests (Cypress: create, complete, filter, edit, delete, search, overdue)
-- [ ] CI pipeline
+- [x] CI pipeline (GitHub Actions: backend, frontend, and e2e suites)
 - [ ] Deployment + live URL
 
 ### After the MVP
@@ -86,6 +86,16 @@ cd frontend && npm run build    # TypeScript check + production build
 ```
 
 Cypress seeds and purges its own `E2E:`-prefixed tasks through the GraphQL API, so it can run against the dev database without disturbing real data.
+
+## CI & Deployment
+
+GitHub Actions runs three workflows on every push: **backend** (RuboCop, Brakeman, Minitest against a Postgres service container), **frontend** (ESLint, Vitest, TypeScript build), and **e2e** (Cypress with both servers booted).
+
+Deployment is defined as code in [render.yaml](render.yaml) — a Render Blueprint with the Dockerized Rails API, the static React build on Render's CDN (with an SPA rewrite for client-side routes), and managed Postgres:
+
+1. Render Dashboard → **New → Blueprint** → connect this repo
+2. Set `RAILS_MASTER_KEY` on the API service (the value of `backend/config/master.key`)
+3. Deploy — the Docker entrypoint runs migrations automatically on boot
 
 ## AI Usage
 

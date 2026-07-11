@@ -1,0 +1,48 @@
+name: E2E
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  cypress:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: kadince
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: kadince_task_list_development
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U kadince"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          working-directory: backend
+          bundler-cache: true
+
+      - name: Prepare and start the API
+        working-directory: backend
+        run: |
+          bin/rails db:prepare
+          bin/rails server &
+          for i in {1..30}; do curl -sf http://localhost:3000/up && break; sleep 1; done
+
+      - name: Run Cypress against the Vite dev server
+        uses: cypress-io/github-action@v6
+        with:
+          working-directory: frontend
+          start: npm run dev
+          wait-on: "http://localhost:5173, http://localhost:3000/up"
+          wait-on-timeout: 60
