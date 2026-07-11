@@ -52,7 +52,7 @@ export function TasksPage() {
 
   return (
     <>
-      <Header title="Tasks" subtitle="Everything in one place." />
+      <Header title="Tasks" subtitle="Everything in one place." showSearch />
       <div className="toolbar">
         <FilterTabs value={filter} onChange={setFilter} counts={counts} />
         <button

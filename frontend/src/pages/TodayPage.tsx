@@ -1,9 +1,7 @@
 import { Header } from '../components/Header'
-import { useLayout } from '../hooks/useLayout'
 import { TaskGroup } from '../components/TaskGroup'
 import { useTasks } from '../hooks/useTasks'
 import { byDueDate, isDueToday, isOverdue } from '../lib/dates'
-import { searchTasks } from '../lib/searchTasks'
 
 function greeting(): string {
   const hour = new Date().getHours()
@@ -23,7 +21,6 @@ function subtitle(overdueCount: number, dueTodayCount: number): string {
 }
 
 export function TodayPage() {
-  const { search } = useLayout()
   const { data: tasks, isPending, isError, error } = useTasks('ALL')
 
   if (isPending) {
@@ -38,9 +35,8 @@ export function TodayPage() {
     )
   }
 
-  const visible = searchTasks(tasks, search)
-  const overdue = visible.filter(isOverdue).sort(byDueDate)
-  const dueToday = visible.filter(isDueToday)
+  const overdue = tasks.filter(isOverdue).sort(byDueDate)
+  const dueToday = tasks.filter(isDueToday)
   const pendingToday = dueToday.filter((task) => !task.completed).length
 
   return (
@@ -59,13 +55,7 @@ export function TodayPage() {
         />
       )}
 
-      <TaskGroup
-        title="Today"
-        tasks={dueToday}
-        emptyMessage={
-          search ? 'No tasks match your search.' : 'Nothing due today.'
-        }
-      />
+      <TaskGroup title="Today" tasks={dueToday} emptyMessage="Nothing due today." />
     </>
   )
 }
