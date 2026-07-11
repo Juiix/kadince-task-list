@@ -9,7 +9,7 @@ import { searchTasks } from '../lib/searchTasks'
 import type { TaskFilter } from '../types'
 
 const GROUP_LABELS: Record<TaskFilter, string> = {
-  ALL: 'My Tasks',
+  ALL: 'Tasks',
   PENDING: 'Pending',
   COMPLETED: 'Completed',
 }
@@ -53,7 +53,7 @@ export function TasksPage() {
   return (
     <>
       <Header
-        title="My Tasks"
+        title="Tasks"
         subtitle="Everything in one place."
         onAddTask={() => openAddTask()}
       />

@@ -24,7 +24,7 @@ const NAV_ITEMS: NavItem[] = [
   },
   {
     to: '/tasks',
-    label: 'My Tasks',
+    label: 'Tasks',
     countKey: 'all',
     isActive: (pathname, filter) => pathname === '/tasks' && filter === null,
     icon: (
