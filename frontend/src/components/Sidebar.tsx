@@ -4,7 +4,7 @@ import type { TaskCounts } from '../hooks/useTaskCounts'
 interface NavItem {
   to: string
   label: string
-  countKey: keyof TaskCounts
+  countKey?: keyof TaskCounts
   isActive: (pathname: string, filter: string | null) => boolean
   icon: React.ReactNode
 }
@@ -25,34 +25,10 @@ const NAV_ITEMS: NavItem[] = [
   {
     to: '/tasks',
     label: 'Tasks',
-    countKey: 'all',
-    isActive: (pathname, filter) => pathname === '/tasks' && filter === null,
+    isActive: (pathname) => pathname === '/tasks',
     icon: (
       <svg viewBox="0 0 24 24" aria-hidden="true">
         <path d="M4 11.5 12 4l8 7.5M6 10v9h4v-5h4v5h4v-9" />
-      </svg>
-    ),
-  },
-  {
-    to: '/tasks?filter=pending',
-    label: 'Pending',
-    countKey: 'pending',
-    isActive: (pathname, filter) => pathname === '/tasks' && filter === 'pending',
-    icon: (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="12" cy="12" r="8.5" />
-      </svg>
-    ),
-  },
-  {
-    to: '/tasks?filter=completed',
-    label: 'Completed',
-    countKey: 'completed',
-    isActive: (pathname, filter) => pathname === '/tasks' && filter === 'completed',
-    icon: (
-      <svg viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="12" cy="12" r="8.5" />
-        <path d="m8.5 12.5 2.5 2.5 4.5-5.5" />
       </svg>
     ),
   },
@@ -91,7 +67,9 @@ export function Sidebar({ counts }: SidebarProps) {
             >
               {item.icon}
               <span>{item.label}</span>
-              {counts && <span className="nav-count">{counts[item.countKey]}</span>}
+              {counts && item.countKey && (
+                <span className="nav-count">{counts[item.countKey]}</span>
+              )}
             </Link>
           )
         })}
