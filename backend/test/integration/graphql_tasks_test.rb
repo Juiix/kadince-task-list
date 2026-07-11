@@ -9,14 +9,16 @@ class GraphqlTasksTest < ActionDispatch::IntegrationTest
 
   # --- Queries ---
 
-  test "tasks returns all tasks newest first" do
-    older = create(:task, created_at: 2.days.ago)
-    newer = create(:task)
+  test "tasks orders pending by due date first, completed last" do
+    completed = create(:task, :completed)
+    undated = create(:task)
+    later = create(:task, due_on: 5.days.from_now)
+    sooner = create(:task, due_on: 1.day.from_now)
 
-    body = execute_graphql("{ tasks { id title completed } }")
+    body = execute_graphql("{ tasks { id } }")
 
     ids = body.dig("data", "tasks").map { |t| t["id"].to_i }
-    assert_equal [ newer.id, older.id ], ids
+    assert_equal [ sooner.id, later.id, undated.id, completed.id ], ids
   end
 
   test "tasks filter PENDING returns only incomplete tasks" do

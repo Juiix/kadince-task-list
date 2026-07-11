@@ -3,16 +3,15 @@
 module Types
   class QueryType < Types::BaseObject
     field :tasks, [ Types::TaskType ], null: false,
-      description: "All tasks, newest first, optionally filtered by status" do
+      description: "Tasks ordered for display: pending before completed, soonest due date first" do
       argument :filter, Types::TaskFilterType, required: false, default_value: :all
     end
 
     def tasks(filter:)
-      scope = Task.newest_first
       case filter
-      when :pending then scope.pending
-      when :completed then scope.completed
-      else scope
+      when :pending then Task.pending.by_due_date
+      when :completed then Task.completed.order(updated_at: :desc)
+      else Task.pending_first.by_due_date
       end
     end
 

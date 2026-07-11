@@ -6,4 +6,6 @@ class Task < ApplicationRecord
   scope :newest_first, -> { order(created_at: :desc) }
   scope :overdue, -> { pending.where(due_on: ...Date.current) }
   scope :due_today, -> { where(due_on: Date.current) }
+  scope :pending_first, -> { order(completed: :asc) }
+  scope :by_due_date, -> { order(arel_table[:due_on].asc.nulls_last, created_at: :desc) }
 end

@@ -40,6 +40,8 @@ Beyond meeting the assessment, I set additional goals for this project:
 - [x] Due dates with overdue highlighting
 - [x] Today dashboard: overdue tasks surfaced above today's list
 - [x] Task search (client-side)
+- [x] Display ordering: pending tasks (soonest due first) above completed
+- [ ] Cursor-based pagination (GraphQL connections) with server-side task counts
 - [ ] Projects for grouping tasks
 - [ ] Tags for categorizing tasks
 - [ ] Optimistic updates for instant UI feedback on toggle/delete

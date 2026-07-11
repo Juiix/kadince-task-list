@@ -59,4 +59,19 @@ class TaskTest < ActiveSupport::TestCase
 
     assert_equal [ newer, older ], Task.newest_first.to_a
   end
+
+  test ".by_due_date orders soonest first with undated tasks last" do
+    undated = create(:task)
+    later = create(:task, due_on: 5.days.from_now)
+    sooner = create(:task, due_on: 1.day.from_now)
+
+    assert_equal [ sooner, later, undated ], Task.by_due_date.to_a
+  end
+
+  test ".pending_first orders incomplete tasks before completed ones" do
+    completed = create(:task, :completed)
+    pending_task = create(:task)
+
+    assert_equal [ pending_task, completed ], Task.pending_first.to_a
+  end
 end
