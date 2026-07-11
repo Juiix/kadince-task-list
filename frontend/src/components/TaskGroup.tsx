@@ -6,7 +6,6 @@ interface TaskGroupProps {
   tasks: Task[]
   emptyMessage: string
   tone?: 'default' | 'danger'
-  onAdd?: () => void
 }
 
 export function TaskGroup({
@@ -14,7 +13,6 @@ export function TaskGroup({
   tasks,
   emptyMessage,
   tone = 'default',
-  onAdd,
 }: TaskGroupProps) {
   return (
     <section className="task-group" aria-label={title} data-cy="task-group">
@@ -36,16 +34,6 @@ export function TaskGroup({
               <TaskItem key={task.id} task={task} />
             ))}
           </ul>
-        )}
-        {onAdd && (
-          <button
-            type="button"
-            className="add-row"
-            data-cy="add-task-inline"
-            onClick={onAdd}
-          >
-            + Add task
-          </button>
         )}
       </div>
     </section>

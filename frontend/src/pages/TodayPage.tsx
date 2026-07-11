@@ -2,7 +2,7 @@ import { Header } from '../components/Header'
 import { useLayout } from '../hooks/useLayout'
 import { TaskGroup } from '../components/TaskGroup'
 import { useTasks } from '../hooks/useTasks'
-import { byDueDate, isDueToday, isOverdue, todayISO } from '../lib/dates'
+import { byDueDate, isDueToday, isOverdue } from '../lib/dates'
 import { searchTasks } from '../lib/searchTasks'
 
 function greeting(): string {
@@ -23,7 +23,7 @@ function subtitle(overdueCount: number, dueTodayCount: number): string {
 }
 
 export function TodayPage() {
-  const { search, openAddTask } = useLayout()
+  const { search } = useLayout()
   const { data: tasks, isPending, isError, error } = useTasks('ALL')
 
   if (isPending) {
@@ -65,7 +65,6 @@ export function TodayPage() {
         emptyMessage={
           search ? 'No tasks match your search.' : 'Nothing due today.'
         }
-        onAdd={() => openAddTask({ dueOn: todayISO() })}
       />
     </>
   )

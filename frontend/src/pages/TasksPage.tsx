@@ -52,19 +52,24 @@ export function TasksPage() {
 
   return (
     <>
-      <Header
-        title="Tasks"
-        subtitle="Everything in one place."
-        onAddTask={() => openAddTask()}
-      />
-      <FilterTabs value={filter} onChange={setFilter} counts={counts} />
+      <Header title="Tasks" subtitle="Everything in one place." />
+      <div className="toolbar">
+        <FilterTabs value={filter} onChange={setFilter} counts={counts} />
+        <button
+          type="button"
+          className="btn primary"
+          data-cy="add-task-button"
+          onClick={() => openAddTask()}
+        >
+          + Add Task
+        </button>
+      </div>
       <TaskGroup
         title={GROUP_LABELS[filter]}
         tasks={visible}
         emptyMessage={
           search ? 'No tasks match your search.' : EMPTY_MESSAGES[filter]
         }
-        onAdd={() => openAddTask()}
       />
     </>
   )
