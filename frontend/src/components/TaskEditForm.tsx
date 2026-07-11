@@ -45,6 +45,7 @@ export function TaskEditForm({ task, onClose }: TaskEditFormProps) {
         type="text"
         aria-label="Task title"
         aria-invalid={errors.title ? true : undefined}
+        data-cy="task-title-input"
         autoFocus
       />
       {errors.title && <p className="field-error">{errors.title.message}</p>}

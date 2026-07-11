@@ -6,7 +6,9 @@ import tseslint from 'typescript-eslint'
 import { defineConfig, globalIgnores } from 'eslint/config'
 
 export default defineConfig([
-  globalIgnores(['dist']),
+  // Cypress specs run in their own runtime with cy/Cypress globals and are
+  // typechecked by cypress/tsconfig.json instead.
+  globalIgnores(['dist', 'cypress']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [

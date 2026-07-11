@@ -30,8 +30,9 @@ Beyond meeting the assessment, I set additional goals for this project:
 - [x] Backend test suite (19 model + integration tests) and RuboCop clean
 - [x] CORS, seed data
 - [x] Frontend read path: task list + filter tabs (TanStack Query)
-- [ ] Frontend mutations UI: create form, complete toggle, edit, delete
-- [ ] Frontend component tests
+- [x] Frontend mutations UI: create form, complete toggle, edit, delete
+- [x] Frontend component tests (Vitest + Testing Library)
+- [x] End-to-end tests (Cypress: create, complete, filter, edit, delete, search, overdue)
 - [ ] CI pipeline
 - [ ] Deployment + live URL
 
@@ -78,9 +79,13 @@ curl -s -X POST http://localhost:3000/graphql \
 
 ```bash
 cd backend && bin/rails test    # model + GraphQL integration tests
+cd frontend && npm test         # Vitest unit + component tests
+cd frontend && npm run cy:run   # Cypress e2e (needs both servers running)
 cd frontend && npm run lint     # ESLint
 cd frontend && npm run build    # TypeScript check + production build
 ```
+
+Cypress seeds and purges its own `E2E:`-prefixed tasks through the GraphQL API, so it can run against the dev database without disturbing real data.
 
 ## AI Usage
 
