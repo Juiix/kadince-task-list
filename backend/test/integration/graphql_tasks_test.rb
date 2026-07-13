@@ -1,11 +1,7 @@
 require "test_helper"
 
 class GraphqlTasksTest < ActionDispatch::IntegrationTest
-  def execute_graphql(query, variables: {})
-    post "/graphql", params: { query: query, variables: variables }, as: :json
-    assert_response :success
-    response.parsed_body
-  end
+  include GraphqlTestHelper
 
   # --- Queries ---
 
@@ -89,18 +85,6 @@ class GraphqlTasksTest < ActionDispatch::IntegrationTest
     assert_equal "2026-07-15", body.dig("data", "createTask", "task", "dueOn")
   end
 
-  test "updateTask can set and clear the due date" do
-    task = create(:task, due_on: Date.current)
-
-    body = execute_graphql(
-      "mutation($input: UpdateTaskInput!) { updateTask(input: $input) { task { dueOn } errors } }",
-      variables: { input: { id: task.id, dueOn: nil } }
-    )
-
-    assert_nil body.dig("data", "updateTask", "task", "dueOn")
-    assert_nil task.reload.due_on
-  end
-
   test "createTask returns validation errors for a blank title" do
     assert_no_difference("Task.count") do
       body = execute_graphql(CREATE_TASK, variables: { input: { title: "" } })
@@ -148,6 +132,18 @@ class GraphqlTasksTest < ActionDispatch::IntegrationTest
     body = execute_graphql(UPDATE_TASK, variables: { input: { id: 0, completed: true } })
 
     assert_includes body.dig("data", "updateTask", "errors"), "Task not found"
+  end
+
+  test "updateTask can set and clear the due date" do
+    task = create(:task, due_on: Date.current)
+
+    body = execute_graphql(
+      "mutation($input: UpdateTaskInput!) { updateTask(input: $input) { task { dueOn } errors } }",
+      variables: { input: { id: task.id, dueOn: nil } }
+    )
+
+    assert_nil body.dig("data", "updateTask", "task", "dueOn")
+    assert_nil task.reload.due_on
   end
 
   # --- deleteTask ---

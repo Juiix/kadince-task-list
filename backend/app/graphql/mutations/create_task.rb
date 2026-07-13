@@ -7,12 +7,13 @@ module Mutations
     argument :title, String, required: true
     argument :description, String, required: false
     argument :due_on, GraphQL::Types::ISO8601Date, required: false
+    argument :project_id, ID, required: false
 
     field :task, Types::TaskType
     field :errors, [ String ], null: false
 
-    def resolve(title:, description: nil, due_on: nil)
-      task = Task.new(title: title, description: description, due_on: due_on)
+    def resolve(title:, description: nil, due_on: nil, project_id: nil)
+      task = Task.new(title: title, description: description, due_on: due_on, project_id: project_id)
 
       if task.save
         { task: task, errors: [] }

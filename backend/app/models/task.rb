@@ -1,5 +1,6 @@
 class Task < ApplicationRecord
   validates :title, presence: true, length: { maximum: 255 }
+  validates :project, presence: { message: "must exist" }, if: :project_id?
 
   belongs_to :project, optional: true
 
