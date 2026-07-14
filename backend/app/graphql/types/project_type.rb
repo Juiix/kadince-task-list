@@ -15,7 +15,7 @@ module Types
       description: "Tasks in this project, pending before completed, soonest due date first"
 
     def tasks
-      object.tasks.pending_first.by_due_date
+      dataloader.with(Sources::ProjectTasks).load(object.id)
     end
   end
 end

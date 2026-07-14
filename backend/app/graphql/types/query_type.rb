@@ -10,11 +10,12 @@ module Types
     end
 
     def tasks(filter:)
-      case filter
+      scope = case filter
       when :pending then Task.pending.by_due_date
       when :completed then Task.completed.order(updated_at: :desc)
       else Task.pending_first.by_due_date
       end
+      scope.includes(:project)
     end
 
     field :task, Types::TaskType, description: "Find a single task by ID" do
