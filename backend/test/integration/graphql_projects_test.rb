@@ -2,7 +2,7 @@ require "test_helper"
 
 class GraphqlProjectsTest < ActionDispatch::IntegrationTest
   include GraphqlTestHelper
-  
+
   # --- Queries ---
 
   test "projects orders active alphabetically first, completed by done date last" do
@@ -80,11 +80,31 @@ class GraphqlProjectsTest < ActionDispatch::IntegrationTest
 
   test "createProject returns validation errors for a blank name" do
     assert_no_difference("Project.count") do
-      body = execute_graphql(CREATE_PROJECT, variables: { input: { name: "" } })
+      body = execute_graphql(CREATE_PROJECT, variables: { input: { name: "", color: "fafafa" } })
 
       payload = body.dig("data", "createProject")
       assert_nil payload["project"]
       assert_includes payload["errors"], "Name can't be blank"
+    end
+  end
+
+  test "createProject returns validation errors for a blank color" do
+    assert_no_difference("Project.count") do
+      body = execute_graphql(CREATE_PROJECT, variables: { input: { name: "Write tests", color: "" } })
+
+      payload = body.dig("data", "createProject")
+      assert_nil payload["project"]
+      assert_includes payload["errors"], "Color can't be blank"
+    end
+  end
+
+  test "createProject returns validation errors for an invalid color" do
+    assert_no_difference("Project.count") do
+      body = execute_graphql(CREATE_PROJECT, variables: { input: { name: "Write tests", color: "zzzzzz" } })
+
+      payload = body.dig("data", "createProject")
+      assert_nil payload["project"]
+      assert_includes payload["errors"], "Color must be a valid 6-digit hex value"
     end
   end
 
@@ -163,6 +183,91 @@ class GraphqlProjectsTest < ActionDispatch::IntegrationTest
       body = execute_graphql(DELETE_PROJECT, variables: { input: { id: 0 } })
 
       assert_includes body.dig("data", "deleteProject", "errors"), "Project not found"
+    end
+  end
+
+  # --- completeProject ---
+
+  COMPLETE_PROJECT = <<~GQL
+    mutation($input: CompleteProjectInput!) {
+      completeProject(input: $input) {
+        project { completed completedAt tasks { id completed } }
+        errors
+      }
+    }
+  GQL
+
+  test "completeProject completed project and dependent tasks" do
+    unrelated_task = create(:task)
+    project = create(:project)
+    first_task = create(:task, project: project)
+    create(:task, project: project)
+
+    body = execute_graphql(COMPLETE_PROJECT, variables: { input: { id: project.id } })
+    payload = body.dig("data", "completeProject")
+    tasks = payload.dig("project", "tasks")
+
+    assert_empty payload["errors"]
+    assert_equal true, payload.dig("project", "completed")
+    assert tasks.any?
+    assert tasks.all? { |t| t["completed"] }
+    assert first_task.reload.completed
+    assert_not unrelated_task.reload.completed
+  end
+
+  test "completeProject twice retains original completedAt" do
+    project = create(:project, :completed)
+    completed_at = project.completed_at
+
+    body = execute_graphql(COMPLETE_PROJECT, variables: { input: { id: project.id } })
+    payload = body.dig("data", "completeProject")
+
+    assert_empty payload["errors"]
+    assert_equal true, payload.dig("project", "completed")
+    assert_equal completed_at.iso8601, payload.dig("project", "completedAt")
+  end
+
+  test "completeProject returns an error for an unknown id" do
+    assert_no_difference("Project.count") do
+      body = execute_graphql(COMPLETE_PROJECT, variables: { input: { id: 0 } })
+
+      assert_includes body.dig("data", "completeProject", "errors"), "Project not found"
+    end
+  end
+
+  # --- reopenProject ---
+
+  REOPEN_PROJECT = <<~GQL
+    mutation($input: ReopenProjectInput!) {
+      reopenProject(input: $input) {
+        project { completed completedAt tasks { id completed } }
+        errors
+      }
+    }
+  GQL
+
+  test "reopenProject clears project completed_at and does not restore dependent tasks" do
+    project = create(:project, :completed)
+    first_task = create(:task, :completed, project: project)
+    create(:task, :completed, project: project)
+
+    body = execute_graphql(REOPEN_PROJECT, variables: { input: { id: project.id } })
+    payload = body.dig("data", "reopenProject")
+    tasks = payload.dig("project", "tasks")
+
+    assert_empty payload["errors"]
+    assert_equal false, payload.dig("project", "completed")
+    assert_nil payload["project"].fetch("completedAt")
+    assert tasks.any?
+    assert tasks.all? { |t| t["completed"] }
+    assert first_task.reload.completed
+  end
+
+  test "reopenProject returns an error for an unknown id" do
+    assert_no_difference("Project.count") do
+      body = execute_graphql(REOPEN_PROJECT, variables: { input: { id: 0 } })
+
+      assert_includes body.dig("data", "reopenProject", "errors"), "Project not found"
     end
   end
 end
