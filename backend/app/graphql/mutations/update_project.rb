@@ -2,12 +2,11 @@
 
 module Mutations
   class UpdateProject < BaseMutation
-    description "Update a project's attributes, including toggling completion"
+    description "Update a project's attributes"
 
     argument :id, ID, required: true
     argument :name, String, required: false
     argument :color, String, required: false
-    argument :completed, Boolean, required: false
 
     field :project, Types::ProjectType
     field :errors, [ String ], null: false
@@ -15,11 +14,6 @@ module Mutations
     def resolve(id:, **attributes)
       project = Project.find_by(id: id)
       return { project: nil, errors: [ "Project not found" ] } unless project
-
-      if attributes.key?(:completed)
-        completed = attributes.delete(:completed)
-        attributes[:completed_at] = completed ? (project.completed_at || Time.current) : nil
-      end
 
       if project.update(attributes)
         { project: project, errors: [] }

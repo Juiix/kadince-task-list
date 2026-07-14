@@ -10,4 +10,15 @@ class Project < ApplicationRecord
   def completed?
     completed_at.present?
   end
+
+  def complete!
+    transaction do
+      tasks.pending.update_all(completed: true, updated_at: Time.current)
+      update!(completed_at: completed_at || Time.current)
+    end
+  end
+
+  def reopen!
+    update!(completed_at: nil)
+  end
 end

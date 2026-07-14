@@ -9,5 +9,7 @@ module Types
     field :create_project, mutation: Mutations::CreateProject
     field :update_project, mutation: Mutations::UpdateProject
     field :delete_project, mutation: Mutations::DeleteProject
+    field :complete_project, mutation: Mutations::CompleteProject
+    field :reopen_project, mutation: Mutations::ReopenProject
   end
 end
