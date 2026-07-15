@@ -4,10 +4,10 @@ import { Header } from '../components/Header'
 import { SearchInput } from '../components/SearchInput'
 import { useLayout } from '../hooks/useLayout'
 import { TaskGroup } from '../components/TaskGroup'
-import { useTaskCounts } from '../hooks/useTaskCounts'
+import { tallyTasks } from '../hooks/useTaskCounts'
 import { useTasks } from '../hooks/useTasks'
 import { searchTasks } from '../lib/searchTasks'
-import type { TaskFilter } from '../types'
+import type { Task, TaskFilter } from '../types'
 
 const GROUP_LABELS: Record<TaskFilter, string> = {
   ALL: 'Tasks',
@@ -30,11 +30,19 @@ export function TasksPage() {
   const { search, openAddTask } = useLayout()
   const [searchParams, setSearchParams] = useSearchParams()
   const filter = parseFilter(searchParams.get('filter'))
-  const counts = useTaskCounts()
+  const projectId = searchParams.get('project')
+  const { data: allTasks } = useTasks('ALL')
   const { data: tasks, isPending, isError, error } = useTasks(filter)
 
   const setFilter = (next: TaskFilter) => {
-    setSearchParams(next === 'ALL' ? {} : { filter: next.toLowerCase() })
+    setSearchParams((params) => {
+      if (next === 'ALL') {
+        params.delete('filter')
+      } else {
+        params.set('filter', next.toLowerCase())
+      }
+      return params
+    })
   }
 
   if (isPending) {
@@ -49,7 +57,13 @@ export function TasksPage() {
     )
   }
 
-  const visible = searchTasks(tasks, search)
+  const narrow = (list: Task[]) =>
+  searchTasks(list, search).filter(
+    (t) => !projectId || t.project?.id === projectId,
+  )
+
+  const counts = allTasks ? tallyTasks(narrow(allTasks)) : undefined
+  const visible = narrow(tasks)
 
   return (
     <>

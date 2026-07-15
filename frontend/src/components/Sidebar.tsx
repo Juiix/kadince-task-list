@@ -1,6 +1,10 @@
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useSearchParams } from 'react-router-dom'
 import { NAV_ITEMS } from './navItems'
 import type { TaskCounts } from '../hooks/useTaskCounts'
+import { useProjects } from '../hooks/useProjects'
+import { useState } from 'react'
+import { Modal } from './Modal'
+import { ProjectForm } from './ProjectForm'
 
 interface SidebarProps {
   counts?: TaskCounts
@@ -8,6 +12,10 @@ interface SidebarProps {
 
 export function Sidebar({ counts }: SidebarProps) {
   const { pathname } = useLocation()
+  const [searchParams] = useSearchParams()
+  const activeProjectId = searchParams.get('project')
+  const { data: projects } = useProjects('ACTIVE')
+  const [addingProject, setAddingProject] = useState(false)
 
   return (
     <aside className="sidebar">
@@ -22,7 +30,7 @@ export function Sidebar({ counts }: SidebarProps) {
 
       <nav aria-label="Task views">
         {NAV_ITEMS.map((item) => {
-          const active = item.isActive(pathname)
+          const active = item.isActive(pathname) && !activeProjectId
           return (
             <Link
               key={item.label}
@@ -42,8 +50,30 @@ export function Sidebar({ counts }: SidebarProps) {
       </nav>
 
       <div className="side-section">
-        <p className="side-heading">Projects</p>
-        <p className="side-soon">Coming soon</p>
+        <div className="side-heading-row">
+          <p className="side-heading">Projects</p>
+          <button type="button" className="icon-btn" aria-label="Add Project" data-cy="add-project-button" onClick={() => setAddingProject(true)}>
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 5v14M5 12h14" />
+            </svg>
+          </button>
+        </div>
+        <nav aria-label="Projects">
+          {projects?.map((project) => {
+            const active = activeProjectId == project.id
+            return (
+              <Link
+                key={project.id}
+                to={`/tasks?project=${project.id}`}
+                className={active ? 'nav-item active' : 'nav-item'}
+                data-cy="project-row"
+              >
+                <span className="project-dot" style={{ backgroundColor: `#${project.color}` }} aria-hidden="true" />
+                <span className="project-name">{project.name}</span>
+              </Link>
+            )
+          })}
+        </nav>
       </div>
 
       <div className="side-section">
@@ -67,6 +97,12 @@ export function Sidebar({ counts }: SidebarProps) {
           <span>Help &amp; Feedback</span>
         </button>
       </div>
+
+      {addingProject && (
+        <Modal title="Add Project" onClose={() => setAddingProject(false)}>
+          <ProjectForm onSuccess={() => setAddingProject(false)} />
+        </Modal>
+      )}
     </aside>
   )
 }
