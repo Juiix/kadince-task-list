@@ -7,6 +7,7 @@ const TASK_FIELDS = `
   description
   completed
   dueOn
+  project { id name color }
   createdAt
   updatedAt
 `
@@ -40,6 +41,7 @@ export interface CreateTaskInput {
   title: string
   description?: string | null
   dueOn?: string | null
+  projectId?: string | null
 }
 
 export async function createTask(input: CreateTaskInput): Promise<Task> {
@@ -63,6 +65,7 @@ export interface UpdateTaskInput {
   description?: string | null
   completed?: boolean
   dueOn?: string | null
+  projectId?: string | null
 }
 
 export async function updateTask(input: UpdateTaskInput): Promise<Task> {

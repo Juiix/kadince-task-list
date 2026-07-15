@@ -1,6 +1,6 @@
 # Task List Web App
 
-A full-stack task list application. Create, edit, complete, and delete tasks alongside your work to stay on track and organized.
+A full-stack task list application. Create, edit, complete, and delete tasks, group them into color-coded projects, and stay on track and organized.
 
 **Live demo:** [kadince.juix.dev](https://kadince.juix.dev) — free-tier hosting, so the first request after idle takes ~30s while the API cold-starts.
 
@@ -29,7 +29,7 @@ Beyond meeting the assessment, I set additional goals for this project:
 
 - [x] Task model with validations, scopes, and DB constraints
 - [x] GraphQL API: filtered queries + create/update/delete mutations
-- [x] Backend test suite (19 model + integration tests) and RuboCop clean
+- [x] Backend test suite (model + GraphQL integration tests) and RuboCop clean
 - [x] CORS, seed data
 - [x] Frontend read path: task list + filter tabs (TanStack Query)
 - [x] Frontend mutations UI: create form, complete toggle, edit, delete
@@ -44,8 +44,10 @@ Beyond meeting the assessment, I set additional goals for this project:
 - [x] Today dashboard: overdue tasks surfaced above today's list
 - [x] Task search (client-side)
 - [x] Display ordering: pending tasks (soonest due first) above completed
+- [x] Projects: color-coded task grouping with sidebar navigation, project filtering, and per-project task counts
+- [x] Project completion: completing a project completes its pending tasks; reopening intentionally does not restore them; deleting a project cascades to its tasks
+- [ ] Projects in the mobile navigation (sidebar is desktop-only today)
 - [ ] Cursor-based pagination (GraphQL connections) with server-side task counts
-- [ ] Projects for grouping tasks
 - [ ] Tags for categorizing tasks
 - [ ] Optimistic updates for instant UI feedback on toggle/delete
 
@@ -87,7 +89,7 @@ cd frontend && npm run lint     # ESLint
 cd frontend && npm run build    # TypeScript check + production build
 ```
 
-Cypress seeds and purges its own `E2E:`-prefixed tasks through the GraphQL API, so it can run against the dev database without disturbing real data.
+Cypress seeds and purges its own `E2E:`-prefixed tasks and projects through the GraphQL API, so it can run against the dev database without disturbing real data.
 
 ## CI & Deployment
 
@@ -101,4 +103,8 @@ Deployment is defined as code in [render.yaml](render.yaml) — a Render Bluepri
 
 ## AI Usage
 
-I've used Claude Code as a pair programmer throughout this project, and that was a deliberate goal. Coming from ASP.NET/C#, I want to learn Rails, GraphQL, and the React ecosystem while building something I fully understand. AI has the ability to accelerate development in order to deliver better products to users, and I'd like to showcase that here.
+I've used Claude Code as a pair programmer throughout this project. Coming from ASP.NET/C#, I want to learn Rails, GraphQL, and the React ecosystem while building something I fully understand.
+
+**Bootstrapping the MVP** - AI implemented in reviewed vertical slices (model -> API -> UI) while I directed the decisions: stack, schema design, error-handling conventions, and UX calls. Each slice doubled as a guided lesson mapping concepts I know from .NET onto their Rails/React equivalents.
+
+**The projects feature — flipping the roles** - I drove and AI coached. I wrote the migrations, models, custom validations, GraphQL types and mutations, and the bulk of the test suite by hand, with AI reviewing and pushing back. The design debates were the point: cascade vs. nullify on delete, declared vs. derived completion state, an invariant to keep pending tasks out of completed projects, and batching the N+1 with graphql-ruby's Dataloader.

@@ -9,6 +9,7 @@ module Mutations
     argument :description, String, required: false
     argument :completed, Boolean, required: false
     argument :due_on, GraphQL::Types::ISO8601Date, required: false
+    argument :project_id, ID, required: false
 
     field :task, Types::TaskType
     field :errors, [ String ], null: false

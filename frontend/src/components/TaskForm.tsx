@@ -1,15 +1,18 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useCreateTask } from '../hooks/useTaskMutations'
+import { useProjects } from '../hooks/useProjects'
 import { taskSchema, type TaskFormValues } from '../lib/taskSchema'
 
 interface TaskFormProps {
   onSuccess?: () => void
   defaultDueOn?: string
+  defaultProjectId?: string
 }
 
-export function TaskForm({ onSuccess, defaultDueOn }: TaskFormProps) {
+export function TaskForm({ onSuccess, defaultDueOn, defaultProjectId }: TaskFormProps) {
   const createTask = useCreateTask()
+  const { data: projects } = useProjects('ACTIVE')
   const {
     register,
     handleSubmit,
@@ -17,7 +20,12 @@ export function TaskForm({ onSuccess, defaultDueOn }: TaskFormProps) {
     formState: { errors, isSubmitting },
   } = useForm<TaskFormValues>({
     resolver: zodResolver(taskSchema),
-    defaultValues: { title: '', description: '', dueOn: defaultDueOn ?? '' },
+    defaultValues: {
+      title: '',
+      description: '',
+      dueOn: defaultDueOn ?? '',
+      projectId: defaultProjectId ?? '',
+    },
   })
 
   const onSubmit = handleSubmit(async (values) => {
@@ -26,6 +34,7 @@ export function TaskForm({ onSuccess, defaultDueOn }: TaskFormProps) {
         title: values.title,
         description: values.description || null,
         dueOn: values.dueOn || null,
+        projectId: values.projectId || null,
       })
       reset()
       onSuccess?.()
@@ -63,6 +72,18 @@ export function TaskForm({ onSuccess, defaultDueOn }: TaskFormProps) {
         <input type="date" {...register('dueOn')} data-cy="task-due-input" />
       </label>
       {errors.dueOn && <p className="field-error">{errors.dueOn.message}</p>}
+
+      <label className="date-field">
+        <span>Project (optional)</span>
+        <select {...register('projectId')} data-cy="task-project-select">
+          <option value="">No project</option>
+          {projects?.map((project) => (
+            <option key={project.id} value={project.id}>
+              {project.name}
+            </option>
+          ))}
+        </select>
+      </label>
 
       {createTask.isError && (
         <p className="field-error" role="alert">

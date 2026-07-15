@@ -1,13 +1,16 @@
+import { useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { FilterTabs } from '../components/FilterTabs'
 import { Header } from '../components/Header'
+import { ProjectBanner } from '../components/ProjectBanner'
 import { SearchInput } from '../components/SearchInput'
 import { useLayout } from '../hooks/useLayout'
 import { TaskGroup } from '../components/TaskGroup'
-import { useTaskCounts } from '../hooks/useTaskCounts'
+import { tallyTasks } from '../hooks/useTaskCounts'
+import { useProjects } from '../hooks/useProjects'
 import { useTasks } from '../hooks/useTasks'
 import { searchTasks } from '../lib/searchTasks'
-import type { TaskFilter } from '../types'
+import type { Task, TaskFilter } from '../types'
 
 const GROUP_LABELS: Record<TaskFilter, string> = {
   ALL: 'Tasks',
@@ -30,11 +33,36 @@ export function TasksPage() {
   const { search, openAddTask } = useLayout()
   const [searchParams, setSearchParams] = useSearchParams()
   const filter = parseFilter(searchParams.get('filter'))
-  const counts = useTaskCounts()
+  const projectId = searchParams.get('project')
+  const { data: allTasks } = useTasks('ALL')
   const { data: tasks, isPending, isError, error } = useTasks(filter)
+  // ALL (not ACTIVE): the banner must keep rendering after the project is
+  // completed while filtered to it, so Reopen stays reachable.
+  const { data: projects } = useProjects('ALL')
+  const project = projectId
+    ? projects?.find((p) => p.id === projectId)
+    : undefined
+
+  // Self-heal the URL: if it names a project that no longer exists
+  // (deleted here or elsewhere, stale bookmark), drop the filter.
+  useEffect(() => {
+    if (projectId && projects && !projects.some((p) => p.id === projectId)) {
+      setSearchParams((params) => {
+        params.delete('project')
+        return params
+      })
+    }
+  }, [projectId, projects, setSearchParams])
 
   const setFilter = (next: TaskFilter) => {
-    setSearchParams(next === 'ALL' ? {} : { filter: next.toLowerCase() })
+    setSearchParams((params) => {
+      if (next === 'ALL') {
+        params.delete('filter')
+      } else {
+        params.set('filter', next.toLowerCase())
+      }
+      return params
+    })
   }
 
   if (isPending) {
@@ -49,7 +77,13 @@ export function TasksPage() {
     )
   }
 
-  const visible = searchTasks(tasks, search)
+  const narrow = (list: Task[]) =>
+  searchTasks(list, search).filter(
+    (t) => !projectId || t.project?.id === projectId,
+  )
+
+  const counts = allTasks ? tallyTasks(narrow(allTasks)) : undefined
+  const visible = narrow(tasks)
 
   return (
     <>
@@ -62,18 +96,29 @@ export function TasksPage() {
             type="button"
             className="btn primary"
             data-cy="add-task-button"
-            onClick={() => openAddTask()}
+            onClick={() => openAddTask(project && !project.completed ? { projectId: project.id } : undefined)}
           >
             + Add Task
           </button>
         </div>
       </div>
+      {project && (
+        <ProjectBanner
+          project={project}
+          pendingCount={counts?.pending ?? 0}
+          taskCount={counts?.all ?? 0}
+        />
+      )}
       <TaskGroup
         title={GROUP_LABELS[filter]}
         tasks={visible}
         showHeader={false}
         emptyMessage={
-          search ? 'No tasks match your search.' : EMPTY_MESSAGES[filter]
+          search
+            ? 'No tasks match your search.'
+            : project
+              ? 'No tasks in this project yet.'
+              : EMPTY_MESSAGES[filter]
         }
       />
     </>

@@ -14,6 +14,7 @@ export const taskSchema = z.object({
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/, 'Enter a valid date')
     .or(z.literal('')),
+  projectId: z.string().optional(),
 })
 
 export type TaskFormValues = z.infer<typeof taskSchema>

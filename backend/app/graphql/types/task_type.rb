@@ -11,5 +11,6 @@ module Types
     field :due_on, GraphQL::Types::ISO8601Date, description: "The date this task is meant to be done"
     field :created_at, GraphQL::Types::ISO8601DateTime, null: false
     field :updated_at, GraphQL::Types::ISO8601DateTime, null: false
+    field :project, Types::ProjectType
   end
 end

@@ -22,6 +22,25 @@ class TaskTest < ActiveSupport::TestCase
     assert_equal false, task.completed
   end
 
+  test "cannot be marked pending in a completed project" do
+    project = create(:project, :completed, name: "Build a Doghouse for Koto")
+    first_task = create(:task, :completed, title: "Research blueprints", project: project)
+
+    first_task.completed = false
+    assert_not first_task.valid?
+    assert_includes first_task.errors[:base], "Task cannot be pending when its parent project is completed"
+  end
+
+  test "cannot be pending in a completed project" do
+    project = create(:project, :completed, name: "Build a Doghouse for Koto")
+
+    moved_task = create(:task, title: "Fix leaky roof")
+    moved_task.project = project
+
+    assert_not moved_task.valid?
+    assert_includes moved_task.errors[:base], "Task cannot be pending when its parent project is completed"
+  end
+
   test ".pending returns only incomplete tasks" do
     pending_task = create(:task)
     create(:task, :completed)
