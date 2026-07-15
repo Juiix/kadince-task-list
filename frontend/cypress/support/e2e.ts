@@ -13,12 +13,13 @@ export function seedTask(input: {
   description?: string
   dueOn?: string
   completed?: boolean
+  projectId?: string
 }) {
   return graphql(
     `mutation($input: CreateTaskInput!) {
       createTask(input: $input) { task { id } errors }
     }`,
-    { input: { title: input.title, description: input.description, dueOn: input.dueOn } },
+    { input: { title: input.title, description: input.description, dueOn: input.dueOn, projectId: input.projectId } },
   ).then(({ body }) => {
     const id = body.data.createTask.task.id as string
     if (input.completed) {
@@ -27,6 +28,30 @@ export function seedTask(input: {
           updateTask(input: $input) { task { id } errors }
         }`,
         { input: { id, completed: true } },
+      )
+    }
+    return cy.wrap(id)
+  })
+}
+
+export function seedProject(input: {
+  name: string
+  color?: string
+  completed?: boolean
+}) {
+  return graphql(
+    `mutation($input: CreateProjectInput!) {
+      createProject(input: $input) { project { id } errors }
+    }`,
+    { input: { name: input.name, color: input.color || 'c98500' } },
+  ).then(({ body }) => {
+    const id = body.data.createProject.project.id as string
+    if (input.completed) {
+      graphql(
+        `mutation($input: CompleteProjectInput!) {
+          completeProject(input: $input) { project { id } errors }
+        }`,
+        { input: { id } },
       )
     }
     return cy.wrap(id)
@@ -44,6 +69,22 @@ export function purgeE2eTasks() {
           deleteTask(input: $input) { id errors }
         }`,
         { input: { id: task.id } },
+      )
+    })
+  })
+}
+
+export function purgeE2eProjects() {
+  graphql('{ projects { id name } }').then(({ body }) => {
+    const strays = body.data.projects.filter((project: { name: string }) =>
+      project.name.startsWith(E2E_PREFIX),
+    )
+    strays.forEach((project: { id: string }) => {
+      graphql(
+        `mutation($input: DeleteProjectInput!) {
+          deleteProject(input: $input) { id errors }
+        }`,
+        { input: { id: project.id } },
       )
     })
   })

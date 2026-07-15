@@ -777,6 +777,7 @@ body {
 .swatch input {
   position: absolute;
   opacity: 0;          /* invisible but still focusable — display:none would kill keyboard */
+  pointer-events: none;
 }
 
 .swatch-dot {
