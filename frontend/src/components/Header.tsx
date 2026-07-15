@@ -10,10 +10,6 @@ export function Header({ title, subtitle }: HeaderProps) {
         <h1>{title}</h1>
         <p className="header-subtitle">{subtitle}</p>
       </div>
-
-      <span className="avatar" aria-hidden="true">
-        T
-      </span>
     </header>
   )
 }

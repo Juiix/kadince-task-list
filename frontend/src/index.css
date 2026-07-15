@@ -254,20 +254,6 @@ body {
   color: var(--text-muted);
 }
 
-.avatar {
-  width: 2.25rem;
-  height: 2.25rem;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), #b07df7);
-  color: #fff;
-  font-weight: 700;
-  font-size: 0.95rem;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
 .main {
   flex: 1;
   width: 100%;
