@@ -16,12 +16,13 @@ Beyond meeting the assessment, I set additional goals for this project:
 
 | Layer | Choice | Why |
 |---|---|---|
-| API | Ruby on Rails | Kadince's backend framework |
-| API style | GraphQL | Matches API layer |
-| Database | PostgreSQL | Matches Kadince; constraints at the DB level, not just the app |
-| Frontend | ReactTS | TS for compile-time safety |
+| API | Ruby on Rails (API-only) | Convention-driven models/migrations; React owns the UI |
+| API style | GraphQL | Typed schema, client-shaped queries; validation errors returned as data in mutation payloads |
+| Database | PostgreSQL | Constraints at the DB level (NOT NULL, FKs, cascades), not just the app |
+| Frontend | React + TypeScript | Compile-time safety; zod validates at the runtime boundaries TS can't see |
 | Server state | TanStack Query | Caching, loading/error states, and cache invalidation after mutations |
-| Backend tests | Minitest + FactoryBot + Faker | Matches test framework |
+| Backend tests | Minitest + FactoryBot + Faker | Assert-style tests; factories keep test data valid by default |
+| E2E tests | Cypress | Browser-level proof of the core flows against the real API |
 
 ## Project Status
 
