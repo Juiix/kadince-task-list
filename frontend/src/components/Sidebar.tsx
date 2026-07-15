@@ -99,8 +99,17 @@ export function Sidebar({ counts }: SidebarProps) {
       </div>
 
       {addingProject && (
-        <Modal title="Add Project" onClose={() => setAddingProject(false)}>
-          <ProjectForm onSuccess={() => setAddingProject(false)} />
+        <Modal
+          title="Create Project"
+          subtitle="Organize your tasks by project."
+          icon={
+            <svg viewBox="0 0 24 24">
+              <path d="M3.5 6.5a2 2 0 0 1 2-2h4l2 2.5h7a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2v-11.5Z" />
+            </svg>
+          }
+          onClose={() => setAddingProject(false)}
+        >
+          <ProjectForm onSuccess={() => setAddingProject(false)} onCancel={() => setAddingProject(false)} />
         </Modal>
       )}
     </aside>

@@ -34,6 +34,7 @@ export function Layout() {
             defaultDueOn={adding.dueOn}
             defaultProjectId={adding.projectId}
             onSuccess={() => setAdding(null)}
+            onCancel={() => setAdding(null)}
           />
         </Modal>
       )}

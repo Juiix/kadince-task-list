@@ -726,6 +726,9 @@ body {
   border: 1px solid var(--border);
   border-radius: 9px;
   padding: 0.55rem 0.75rem;
+}
+
+.task-form textarea {
   resize: vertical;
 }
 
@@ -741,21 +744,146 @@ body {
   border-color: var(--accent);
 }
 
-.task-form .btn {
-  align-self: flex-start;
-}
 
-.date-field {
+.field {
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
-  font-size: 0.85rem;
-  color: var(--text-muted);
+  gap: 0.35rem;
+  min-width: 0;
 }
 
-.date-field input {
+.field-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.field-label .optional {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.field-label .req {
+  color: var(--danger);
+  font-style: normal;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+@media (max-width: 560px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Icon-wrapped select/date controls */
+.control {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  padding: 0 0.75rem;
+  /* fixed height: select and date inputs have engine-specific intrinsic
+     sizes, so equal padding alone won't keep the pair matched */
+  height: 2.7rem;
+}
+
+.control svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: var(--text-muted);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+.control select,
+.control input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  padding: 0;
+  resize: none;
   color-scheme: dark;
-  width: fit-content;
+}
+
+.control select:focus,
+.control input:focus {
+  outline: none;
+}
+
+.control:focus-within {
+  border-color: var(--accent);
+  outline: 1px solid var(--accent);
+  outline-offset: -1px;
+}
+
+/* Native date inputs can't take a placeholder (Safari previews today's
+   date; Chromium/Firefox show segment hints). When empty and unfocused,
+   hide the input's text — every engine inherits color into the segments,
+   Chromium also needs the pseudo-element — and float our own hint. */
+.control {
+  position: relative;
+}
+
+.date-placeholder {
+  display: none;
+}
+
+.control input.date-empty:not(:focus) {
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.control input.date-empty:not(:focus)::-webkit-datetime-edit {
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.control input.date-empty:not(:focus) + .date-placeholder {
+  display: block;
+  position: absolute;
+  left: 2.25rem;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.control-clear {
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  line-height: 1;
+  padding: 0.1rem 0.3rem;
+  border-radius: 6px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.control-clear:hover {
+  color: var(--text);
+  background: var(--surface-hover);
+}
+
+.form-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  border-top: 1px solid var(--border);
+  padding-top: 1rem;
+  margin-top: 0.25rem;
 }
 
 .task-form.edit {
@@ -781,16 +909,26 @@ body {
 }
 
 .swatch-dot {
-  display: block;
-  width: 1.6rem; height: 1.6rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
   border-radius: 50%;
   cursor: pointer;
   border: 2px solid transparent;
+  color: transparent;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.swatch-dot::after {
+  content: '✓';
 }
 
 .swatch input:checked + .swatch-dot {
-  border-color: var(--text);        /* selection ring */
-  box-shadow: 0 0 0 2px var(--bg-raised), 0 0 0 4px var(--accent);
+  color: #fff;
+  box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent);
 }
 
 .swatch input:focus-visible + .swatch-dot {
@@ -807,23 +945,7 @@ body {
   position: relative;   /* anchors the absolutely-positioned hidden input */
 }
 
-/* ---------- Project select, chip, banner ---------- */
-
-.task-form select {
-  font: inherit;
-  color: inherit;
-  background: var(--bg-raised);
-  border: 1px solid var(--border);
-  border-radius: 9px;
-  padding: 0.5rem 0.75rem;
-  width: fit-content;
-}
-
-.task-form select:focus {
-  outline: 2px solid var(--accent);
-  outline-offset: -1px;
-  border-color: var(--accent);
-}
+/* ---------- Project chip, banner ---------- */
 
 .project-chip {
   display: inline-flex;
@@ -885,23 +1007,62 @@ body {
 .modal {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 1.25rem;
+  border-radius: 16px;
+  padding: 1.5rem;
   width: 100%;
-  max-width: 480px;
+  max-width: 600px;
   box-shadow: 0 24px 64px rgba(0, 0, 0, 0.55);
 }
 
 .modal-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 1rem;
+  gap: 0.625rem;
+  margin-bottom: 1.25rem;
+}
+
+.modal-mark {
+  width: 1.9rem;
+  height: 1.9rem;
+  border-radius: 9px;
+  background: var(--accent-soft);
+  border: 1px solid var(--accent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.modal-mark svg {
+  width: 1.05rem;
+  height: 1.05rem;
+  fill: none;
+  stroke: var(--accent-hover);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.modal-heading {
+  flex: 1;
+  min-width: 0;
 }
 
 .modal-header h2 {
   margin: 0;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
+}
+
+.modal-subtitle {
+  margin: 0.1rem 0 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.field-hint {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--text-muted);
 }
 
 .modal-close {

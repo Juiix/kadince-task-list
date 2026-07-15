@@ -20,7 +20,7 @@ describe('TaskForm', () => {
   it('shows a validation error and skips the API on an empty title', async () => {
     renderWithClient(<TaskForm />)
 
-    await userEvent.click(screen.getByRole('button', { name: 'Add task' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Add Task' }))
 
     expect(await screen.findByText('Title is required')).toBeInTheDocument()
     expect(api.createTask).not.toHaveBeenCalled()
@@ -33,7 +33,7 @@ describe('TaskForm', () => {
 
     const titleInput = screen.getByLabelText('Task title')
     await userEvent.type(titleInput, 'New task')
-    await userEvent.click(screen.getByRole('button', { name: 'Add task' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Add Task' }))
 
     expect(vi.mocked(api.createTask).mock.calls[0][0]).toEqual({
       title: 'New task',
@@ -50,7 +50,7 @@ describe('TaskForm', () => {
     renderWithClient(<TaskForm defaultDueOn="2026-08-01" />)
 
     await userEvent.type(screen.getByLabelText('Task title'), 'Dated task')
-    await userEvent.click(screen.getByRole('button', { name: 'Add task' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Add Task' }))
 
     expect(vi.mocked(api.createTask).mock.calls[0][0]).toEqual({
       title: 'Dated task',
@@ -67,7 +67,7 @@ describe('TaskForm', () => {
     renderWithClient(<TaskForm />)
 
     await userEvent.type(screen.getByLabelText('Task title'), 'Fails on server')
-    await userEvent.click(screen.getByRole('button', { name: 'Add task' }))
+    await userEvent.click(screen.getByRole('button', { name: 'Add Task' }))
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
       "Title can't be blank",

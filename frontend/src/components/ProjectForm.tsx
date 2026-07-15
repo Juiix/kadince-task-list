@@ -5,9 +5,10 @@ import { PROJECT_COLORS, projectSchema, type ProjectFormValues } from '../lib/pr
 
 interface ProjectFormProps {
   onSuccess?: () => void
+  onCancel?: () => void
 }
 
-export function ProjectForm({ onSuccess }: ProjectFormProps) {
+export function ProjectForm({ onSuccess, onCancel }: ProjectFormProps) {
   const createProject = useCreateProject()
   const {
     register,
@@ -34,24 +35,33 @@ export function ProjectForm({ onSuccess }: ProjectFormProps) {
 
   return (
     <form className="task-form" onSubmit={onSubmit} noValidate>
-      <input
-        {...register('name')}
-        type="text"
-        placeholder="What's the project?"
-        aria-label="Project name"
-        aria-invalid={errors.name ? true : undefined}
-        data-cy="project-name-input"
-        autoFocus
-      />
-      {errors.name && <p className="field-error">{errors.name.message}</p>}
+      <div className="field">
+        <span className="field-label">
+          Project name <em className="req" aria-hidden="true">*</em>
+        </span>
+        <input
+          {...register('name')}
+          type="text"
+          placeholder="What's the project?"
+          aria-label="Project name"
+          aria-invalid={errors.name ? true : undefined}
+          data-cy="project-name-input"
+          autoFocus
+        />
+        {errors.name && <p className="field-error">{errors.name.message}</p>}
+      </div>
 
-      <div className="swatch-row" role="radiogroup" aria-label="Project color">
-        {PROJECT_COLORS.map((color) => (
+      <div className="field">
+        <span className="field-label">Project color</span>
+        <div className="swatch-row" role="radiogroup" aria-label="Project color">
+          {PROJECT_COLORS.map((color) => (
             <label key={color} className="swatch">
-                <input type="radio" value={color} {...register('color')} data-cy={`swatch-${color}`} />
-                <span className="swatch-dot" style={{ backgroundColor: `#${color}` }} />
+              <input type="radio" value={color} {...register('color')} data-cy={`swatch-${color}`} />
+              <span className="swatch-dot" style={{ backgroundColor: `#${color}` }} />
             </label>
-        ))}
+          ))}
+        </div>
+        <p className="field-hint">Choose a color to easily identify this project.</p>
       </div>
 
       {createProject.isError && (
@@ -60,14 +70,21 @@ export function ProjectForm({ onSuccess }: ProjectFormProps) {
         </p>
       )}
 
-      <button
-        type="submit"
-        className="btn primary"
-        disabled={isSubmitting}
-        data-cy="project-submit"
-      >
-        {isSubmitting ? 'Adding…' : 'Add project'}
-      </button>
+      <div className="form-footer">
+        {onCancel && (
+          <button type="button" className="btn" onClick={onCancel}>
+            Cancel
+          </button>
+        )}
+        <button
+          type="submit"
+          className="btn primary"
+          disabled={isSubmitting}
+          data-cy="project-submit"
+        >
+          {isSubmitting ? 'Creating…' : 'Create Project'}
+        </button>
+      </div>
     </form>
   )
 }
