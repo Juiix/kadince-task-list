@@ -1,6 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useUpdateTask } from '../hooks/useTaskMutations'
+import { useProjects } from '../hooks/useProjects'
 import { taskSchema, type TaskFormValues } from '../lib/taskSchema'
 import type { Task } from '../types'
 
@@ -11,6 +12,7 @@ interface TaskEditFormProps {
 
 export function TaskEditForm({ task, onClose }: TaskEditFormProps) {
   const updateTask = useUpdateTask()
+  const { data: projects } = useProjects('ACTIVE')
   const {
     register,
     handleSubmit,
@@ -21,6 +23,7 @@ export function TaskEditForm({ task, onClose }: TaskEditFormProps) {
       title: task.title,
       description: task.description ?? '',
       dueOn: task.dueOn ?? '',
+      projectId: task.project?.id ?? '',
     },
   })
 
@@ -31,6 +34,7 @@ export function TaskEditForm({ task, onClose }: TaskEditFormProps) {
         title: values.title,
         description: values.description || null,
         dueOn: values.dueOn || null,
+        projectId: values.projectId || null,
       })
       onClose()
     } catch {
@@ -65,6 +69,23 @@ export function TaskEditForm({ task, onClose }: TaskEditFormProps) {
         <input type="date" {...register('dueOn')} data-cy="task-due-input" />
       </label>
       {errors.dueOn && <p className="field-error">{errors.dueOn.message}</p>}
+
+      <label className="date-field">
+        <span>Project (optional)</span>
+        <select {...register('projectId')} data-cy="task-project-select">
+          <option value="">No project</option>
+          {/* A completed project isn't in the active list; keep the task's own
+              project selectable so editing doesn't silently clear it. */}
+          {task.project && !projects?.some((p) => p.id === task.project?.id) && (
+            <option value={task.project.id}>{task.project.name} (completed)</option>
+          )}
+          {projects?.map((project) => (
+            <option key={project.id} value={project.id}>
+              {project.name}
+            </option>
+          ))}
+        </select>
+      </label>
 
       {updateTask.isError && (
         <p className="field-error" role="alert">

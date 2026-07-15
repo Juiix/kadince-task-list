@@ -79,6 +79,16 @@ export function TaskItem({ task }: TaskItemProps) {
       <div className="task-body">
         <p className="task-title" data-cy="task-title">
           {task.title}
+          {task.project && (
+            <span className="project-chip" data-cy="task-project-chip">
+              <span
+                className="project-dot"
+                style={{ backgroundColor: `#${task.project.color}` }}
+                aria-hidden="true"
+              />
+              {task.project.name}
+            </span>
+          )}
         </p>
         {task.description && (
           <p className="task-description">{task.description}</p>

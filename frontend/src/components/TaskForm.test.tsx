@@ -39,6 +39,7 @@ describe('TaskForm', () => {
       title: 'New task',
       description: null,
       dueOn: null,
+      projectId: null,
     })
     expect(onSuccess).toHaveBeenCalled()
     expect(titleInput).toHaveValue('')
@@ -55,6 +56,7 @@ describe('TaskForm', () => {
       title: 'Dated task',
       description: null,
       dueOn: '2026-08-01',
+      projectId: null,
     })
   })
 

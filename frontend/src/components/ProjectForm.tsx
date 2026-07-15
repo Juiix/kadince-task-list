@@ -28,7 +28,7 @@ export function ProjectForm({ onSuccess }: ProjectFormProps) {
       reset()
       onSuccess?.()
     } catch {
-      // Server error is surfaced below via createTask.error
+      // Server error is surfaced below via createProject.error
     }
   })
 

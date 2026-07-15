@@ -5,11 +5,11 @@ import { Modal } from './Modal'
 import { Sidebar } from './Sidebar'
 import { TaskForm } from './TaskForm'
 import { useTaskCounts } from '../hooks/useTaskCounts'
-import type { LayoutContext } from '../hooks/useLayout'
+import type { LayoutContext, TaskDefaults } from '../hooks/useLayout'
 
 export function Layout() {
   const [search, setSearch] = useState('')
-  const [adding, setAdding] = useState<{ dueOn?: string } | null>(null)
+  const [adding, setAdding] = useState<TaskDefaults | null>(null)
   const counts = useTaskCounts()
 
   const context: LayoutContext = {
@@ -30,7 +30,11 @@ export function Layout() {
 
       {adding && (
         <Modal title="Add Task" onClose={() => setAdding(null)}>
-          <TaskForm defaultDueOn={adding.dueOn} onSuccess={() => setAdding(null)} />
+          <TaskForm
+            defaultDueOn={adding.dueOn}
+            defaultProjectId={adding.projectId}
+            onSuccess={() => setAdding(null)}
+          />
         </Modal>
       )}
     </div>
