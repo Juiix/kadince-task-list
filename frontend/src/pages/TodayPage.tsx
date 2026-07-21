@@ -21,7 +21,7 @@ function subtitle(overdueCount: number, dueTodayCount: number): string {
 }
 
 export function TodayPage() {
-  const { data: tasks, isPending, isError, error } = useTasks('ALL')
+  const { data: tasks, isPending, isError, error } = useTasks('ALL', 'DUEDATE')
 
   if (isPending) {
     return <p className="status">Loading tasks…</p>

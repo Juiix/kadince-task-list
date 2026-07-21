@@ -7,14 +7,23 @@ module Types
     field :tasks, [ Types::TaskType ], null: false,
       description: "Tasks ordered for display: pending before completed, soonest due date first" do
       argument :filter, Types::TaskFilterType, required: false, default_value: :all
+      argument :sort, Types::TaskSortType, required: false, default_value: :duedate
     end
 
-    def tasks(filter:)
-      scope = case filter
-      when :pending then Task.pending.by_due_date
-      when :completed then Task.completed.order(updated_at: :desc)
-      else Task.pending_first.by_due_date
+    def tasks(filter:, sort:)
+      # ------------- filter
+      if filter.present?
+        scope = Task.send(filter)
+      else
+        scope = Task.all
       end
+
+      # ------------- sort
+      scope = case sort
+      when :alphabetical then scope.order(title: :asc)
+      else scope.order(due_on: :desc)
+      end
+
       scope.includes(:project)
     end
 

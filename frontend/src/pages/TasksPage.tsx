@@ -10,7 +10,8 @@ import { tallyTasks } from '../hooks/useTaskCounts'
 import { useProjects } from '../hooks/useProjects'
 import { useTasks } from '../hooks/useTasks'
 import { searchTasks } from '../lib/searchTasks'
-import type { Task, TaskFilter } from '../types'
+import type { Task, TaskFilter, TaskSortMode } from '../types'
+import { SortTabs } from '../components/SortTabs'
 
 const GROUP_LABELS: Record<TaskFilter, string> = {
   ALL: 'Tasks',
@@ -29,13 +30,19 @@ function parseFilter(value: string | null): TaskFilter {
   return upper === 'PENDING' || upper === 'COMPLETED' ? upper : 'ALL'
 }
 
+function parseSort(value: string | null): TaskSortMode {
+  const upper = value?.toUpperCase()
+  return upper === 'ALPHABETICAL' ? upper : 'DUEDATE'
+}
+
 export function TasksPage() {
   const { search, openAddTask } = useLayout()
   const [searchParams, setSearchParams] = useSearchParams()
   const filter = parseFilter(searchParams.get('filter'))
+  const sortMode = parseSort(searchParams.get('sort'))
   const projectId = searchParams.get('project')
-  const { data: allTasks } = useTasks('ALL')
-  const { data: tasks, isPending, isError, error } = useTasks(filter)
+  const { data: allTasks } = useTasks('ALL', "DUEDATE")
+  const { data: tasks, isPending, isError, error } = useTasks(filter, sortMode)
   // ALL (not ACTIVE): the banner must keep rendering after the project is
   // completed while filtered to it, so Reopen stays reachable.
   const { data: projects } = useProjects('ALL')
@@ -60,6 +67,17 @@ export function TasksPage() {
         params.delete('filter')
       } else {
         params.set('filter', next.toLowerCase())
+      }
+      return params
+    })
+  }
+
+  const setSortMode = (next: TaskSortMode) => {
+    setSearchParams((params) => {
+      if (next === 'DUEDATE') {
+        params.delete('sort')
+      } else {
+        params.set('sort', next.toLowerCase())
       }
       return params
     })
@@ -90,6 +108,7 @@ export function TasksPage() {
       <Header title="Tasks" subtitle="Everything in one place." />
       <div className="toolbar">
         <FilterTabs value={filter} onChange={setFilter} counts={counts} />
+        <SortTabs value={sortMode} onChange={setSortMode} />
         <div className="toolbar-actions">
           <SearchInput />
           <button

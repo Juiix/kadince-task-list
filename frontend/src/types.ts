@@ -10,6 +10,7 @@ export interface Task {
 }
 
 export type TaskFilter = 'ALL' | 'PENDING' | 'COMPLETED'
+export type TaskSortMode = 'ALPHABETICAL' | 'DUEDATE'
 
 export interface Project {
   id: string

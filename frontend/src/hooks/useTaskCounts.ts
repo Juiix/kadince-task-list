@@ -15,7 +15,7 @@ export interface TaskCounts {
  * stays in sync with the filtered views.
  */
 export function useTaskCounts(): TaskCounts | undefined {
-  const { data: tasks } = useTasks('ALL')
+  const { data: tasks } = useTasks('ALL', 'DUEDATE')
   return tasks ? tallyTasks(tasks) : undefined
 }
 

@@ -1,5 +1,5 @@
 import { graphqlRequest } from '../lib/graphql'
-import type { Task, TaskFilter } from '../types'
+import type { Task, TaskFilter, TaskSortMode } from '../types'
 
 const TASK_FIELDS = `
   id
@@ -25,14 +25,14 @@ function unwrap(payload: TaskPayload, fallbackMessage: string): Task {
   return payload.task
 }
 
-export async function fetchTasks(filter: TaskFilter): Promise<Task[]> {
+export async function fetchTasks(filter: TaskFilter, sort: TaskSortMode): Promise<Task[]> {
   const data = await graphqlRequest<{ tasks: Task[] }>(
-    `query Tasks($filter: TaskFilter) {
-      tasks(filter: $filter) {
+    `query Tasks($filter: TaskFilter, $sort: TaskSort) {
+      tasks(filter: $filter, sort: $sort) {
         ${TASK_FIELDS}
       }
     }`,
-    { filter },
+    { filter, sort }
   )
   return data.tasks
 }
